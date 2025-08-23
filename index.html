@@ -1,133 +1,127 @@
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Portfolio</title>
+    <title>Sujit Bhalekar - Software Engineer</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="mediaqueries.css" />
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-    </head>
-    <body>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
     <nav id="desktop-nav">
         <div class="logo">Sujit Bhalekar</div>
-        <div>
-        <ul class="nav-links">
-            <li><a href="#about">About</a></li>
-            <li><a href="#experience">Experience</a></li>
-            <li><a href="#achievement">Achievements</a></li>
-            <li><a href="#projects">Projects</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
+        <div class="nav-links-container">
+            <ul class="nav-links">
+                <li><a href="#about">About</a></li>
+                <li><a href="#experience">Experience</a></li>
+                <li><a href="#achievement">Achievements</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
         </div>
-    </nav>
-    <nav id="hamburger-nav">
-        <div class="logo">Sujit Bhalekar</div>
         <div class="hamburger-menu">
-        <div class="hamburger-icon" onclick="toggleMenu()">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-        <div class="menu-links">
-            <li><a href="#about" onclick="toggleMenu()">About</a></li>
-            <li><a href="#experience" onclick="toggleMenu()">Experience</a></li>
-            <li><a href="#achievement" onclick="toggleMenu()">Achievements</a></li>
-            <li><a href="#projects" onclick="toggleMenu()">Projects</a></li>
-            <li><a href="#contact" onclick="toggleMenu()">Contact</a></li>
-        </div>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
         </div>
     </nav>
 
     <section id="profile">
         <div class="section__pic-container">
-        <img src="./assets/profile-pic.png" alt="Sujit's profile picture" />
+            <img src="./assets/profile-pic.png" alt="Sujit's profile picture" />
         </div>
         <div class="section__text">
-        <p class="section__text__p1">Hello, I'm</p>
-        <h1 class="title">Sujit Bhalekar</h1>
-        <p class="section__text__p2">Software Engineer <br/>Full Stack Developer<br/>
-        <div class="btn-container">
-            <button
-            class="btn btn-color-1"
-            onclick="window.open('https://drive.google.com/file/d/1gzd2eNYs-JQfFnBqp_D0v0rKgG4dPhIZ/view?usp=sharing', '_blank')"
-            >
-            Download Resume
-            </button>
-            <button class="btn btn-color-2" onclick="location.href='./#contact'">
-            Contact Info
-            </button>
-        </div>
-        <div id="socials-container">
-            <img
-                src="./assets/linkedin.png"
-                alt="My LinkedIn profile"
-                class="icon"
-                onclick="window.open('https://www.linkedin.com/in/sujit-bhalekar-5a094b289/', '_blank')"
-            />
-            <img
-                src="./assets/github.png"
-                alt="My Github profile"
-                class="icon"
-                onclick="window.open('https://github.com/the-illuminatus', '_blank')"
-            />
-            <img
-                src="./assets/leetcode.png"
-                alt="My LeetCode profile"
-                class="icon"
-                onclick="window.open('https://leetcode.com/u/sujit_161001/', '_blank')"
-            />
-        </div>
+            <p class="section__text__p1">Hello, I'm</p>
+            <h1 class="title">Sujit Bhalekar</h1>
+            <p class="section__text__p2">Software Engineer <br/>Full Stack Developer<br/>
+            <div class="btn-container">
+                <button
+                    class="btn btn-color-1"
+                    onclick="window.open('https://drive.google.com/file/d/1gzd2eNYs-JQfFnBqp_D0v0rKgG4dPhIZ/view?usp=sharing', '_blank')"
+                >
+                    Download Resume
+                </button>
+                <button class="btn btn-color-2" onclick="location.href='./#contact'">
+                    Contact Info
+                </button>
+            </div>
+            <div id="socials-container">
+                <img
+                    src="./assets/linkedin.png"
+                    alt="My LinkedIn profile"
+                    class="icon"
+                    onclick="window.open('https://www.linkedin.com/in/sujit-bhalekar-5a094b289/', '_blank')"
+                />
+                <img
+                    src="./assets/github.png"
+                    alt="My Github profile"
+                    class="icon"
+                    onclick="window.open('https://github.com/the-illuminatus', '_blank')"
+                />
+                <img
+                    src="./assets/leetcode.png"
+                    alt="My LeetCode profile"
+                    class="icon"
+                    onclick="window.open('https://leetcode.com/u/sujit_161001/', '_blank')"
+                />
+            </div>
         </div>
     </section>
+
     <section id="about">
-        <p class="section__text__p1">Get To Know More</p>
-        <h1 class="title">About Me</h1>
-        <div class="section-container">
-        <div class="section__pic-container">
-            <img
-            src="./assets/about-pic.png"
-            alt="Profile picture"
-            class="about-pic"
-            />
+        <div class="about-header">
+            <p class="section__text__p1">Get To Know More</p>
+            <h1 class="title">About Me</h1>
         </div>
-        <div class="about-details-container">
-            <div class="about-containers">
-            <div class="details-container">
+        <div class="about-content">
+            <div class="about-image-container">
                 <img
-                src="./assets/experience.png"
-                alt="Experience icon"
-                class="icon"
+                    src="./assets/about-pic.png"
+                    alt="Profile picture"
+                    class="about-pic"
                 />
-                <h3>Experience</h3>
-                <p>2 years <br />Software Engineer <br />Tata Consultancy Services</p>
             </div>
-            <div class="details-container">
-                <img
-                src="./assets/education.png"
-                alt="Education icon"
-                class="icon"
-                />
-                <h3>Education</h3>
-                <p>Bachelor of Technology(I.T) <br/>Government College of Engineering, Aurangabad</p>
+            <div class="about-details-container">
+                <div class="about-containers">
+                    <div class="details-container">
+                        <img
+                            src="./assets/experience.png"
+                            alt="Experience icon"
+                            class="icon"
+                        />
+                        <h3>Experience</h3>
+                        <p>2 years <br />Software Engineer <br />Tata Consultancy Services</p>
+                    </div>
+                    <div class="details-container">
+                        <img
+                            src="./assets/education.png"
+                            alt="Education icon"
+                            class="icon"
+                        />
+                        <h3>Education</h3>
+                        <p>Bachelor of Technology(I.T) <br/>Government College of Engineering, Aurangabad</p>
+                    </div>
+                </div>
+                <div class="text-container">
+                    <p>
+                        Welcome to my portfolio! I am a dedicated software developer with a strong affinity for the sciences, particularly physics and mathematics. My passion lies in uncovering how things work, solving intricate problems, and crafting elegant solutions. Driven by curiosity, I seek to understand the underlying principles behind every challenge I encounter. Whether developing new features or troubleshooting complex systems, I approach each task with a keen problem-solving mindset. As a collaborative team player, I thrive in environments where ideas are shared, and innovation flourishes. Let's connect and create something extraordinary together!
+                        <br/><br/>
+                        During my tenure at <strong>Tata Consultancy Services (TCS)</strong>, I played a pivotal role in migrating on-premises databases to AWS Redshift. I developed Python-based automated data validation frameworks, ensuring accuracy across large datasets. I integrated CI/CD pipelines with Git for efficient version control and deployment. I conducted cross-platform testing and optimized AWS resource performance. Additionally, I ensured the migration adhered to AWS security and compliance best practices, delivering a secure and scalable solution.
+                    </p>
+                </div>
             </div>
-            </div>
-            <div class="text-container">
-            <p style="text-align: justify;">
-                Welcome to my portfolio! I am a dedicated software developer with a strong affinity for the sciences, particularly physics and mathematics. My passion lies in uncovering how things work, solving intricate problems, and crafting elegant solutions. Driven by curiosity, I seek to understand the underlying principles behind every challenge I encounter. Whether developing new features or troubleshooting complex systems, I approach each task with a keen problem-solving mindset. As a collaborative team player, I thrive in environments where ideas are shared, and innovation flourishes. Let's connect and create something extraordinary together!
-                <br/><br/>
-During my tenure at <strong>Tata Consultancy Services (TCS)</strong>, I played a pivotal role in migrating on-premises databases to AWS Redshift. I developed Python-based automated data validation frameworks, ensuring accuracy across large datasets. I integrated CI/CD pipelines with Git for efficient version control and deployment. I conducted cross-platform testing and optimized AWS resource performance. Additionally, I ensured the migration adhered to AWS security and compliance best practices, delivering a secure and scalable solution.</p>
-            </div>
-        </div>
         </div>
         <img
-        src="./assets/arrow.png"
-        alt="Arrow icon"
-        class="icon arrow"
-        onclick="location.href='./#experience'"
+            src="./assets/arrow.png"
+            alt="Arrow icon"
+            class="icon arrow"
+            onclick="location.href='./#experience'"
         />
     </section>
+
     <section id="experience">
         <p class="section__text__p1">Explore My</p>
         <h1 class="title">Experience</h1>
@@ -290,6 +284,78 @@ During my tenure at <strong>Tata Consultancy Services (TCS)</strong>, I played a
             </div>
 
             <div class="details-container">
+                <h2 class="experience-sub-title">Frontend Development</h2>
+                <div class="article-container">
+                    <article>
+                    <img
+                        src="./assets/checkmark.png"
+                        alt="Experience icon"
+                        class="icon"
+                    />
+                    <div>
+                        <h3>HTML5</h3>
+                        <p>Experienced</p>
+                    </div>
+                    </article>
+                    <article>
+                    <img
+                        src="./assets/checkmark.png"
+                        alt="Experience icon"
+                        class="icon"
+                    />
+                    <div>
+                        <h3>CSS3</h3>
+                        <p>Experienced</p>
+                    </div>
+                    </article>
+                    <article>
+                    <img
+                        src="./assets/checkmark.png"
+                        alt="Experience icon"
+                        class="icon"
+                    />
+                    <div>
+                        <h3>React.js</h3>
+                        <p>Intermediate</p>
+                    </div>
+                    </article>
+                    <article>
+                    <img
+                        src="./assets/checkmark.png"
+                        alt="Experience icon"
+                        class="icon"
+                    />
+                    <div>
+                        <h3>Bootstrap</h3>
+                        <p>Intermediate</p>
+                    </div>
+                    </article>
+                    <article>
+                    <img
+                        src="./assets/checkmark.png"
+                        alt="Experience icon"
+                        class="icon"
+                    />
+                    <div>
+                        <h3>Responsive Design</h3>
+                        <p>Experienced</p>
+                    </div>
+                    </article>
+                    <article>
+                    <img
+                        src="./assets/checkmark.png"
+                        alt="Experience icon"
+                        class="icon"
+                    />
+                    <div>
+                        <h3>UI/UX Design</h3>
+                        <p>Basic</p>
+                    </div>
+                    </article>
+                </div>
+            </div>
+
+            <div class="details-container">
                 <h2 class="experience-sub-title">Cloud and Different Tools</h2>
                 <div class="article-container">
                     <article>
@@ -347,61 +413,21 @@ During my tenure at <strong>Tata Consultancy Services (TCS)</strong>, I played a
                             <p>Basic</p>
                         </div>
                     </article>
-                    <article>
-                        <article>
-                            <img
-                                src="./assets/checkmark.png"
-                                alt="Experience icon"
-                                class="icon"
-                            />
-                            <div>
-                                <h3>Postman</h3>
-                                <p>Experienced</p>
-                            </div>
-                        </article>
-                        <article>
-                    </article>
+                                         <article>
+                         <img
+                             src="./assets/checkmark.png"
+                             alt="Experience icon"
+                             class="icon"
+                         />
+                         <div>
+                             <h3>Postman</h3>
+                             <p>Experienced</p>
+                         </div>
+                     </article>
                 </div>
             </div>
 
-            <div class="details-container">
-                <h2 class="experience-sub-title">Frontend Development</h2>
-                <div class="article-container">
-                    <article>
-                    <img
-                        src="./assets/checkmark.png"
-                        alt="Experience icon"
-                        class="icon"
-                    />
-                    <div>
-                        <h3>HTML</h3>
-                        <p>Intermediate</p>
-                    </div>
-                    </article>
-                    <article>
-                        <img
-                            src="./assets/checkmark.png"
-                            alt="Experience icon"
-                            class="icon"
-                        />
-                        <div>
-                            <h3>CSS</h3>
-                            <p>Intermediate</p>
-                        </div>
-                        </article>
-                    <article>
-                    <img
-                        src="./assets/checkmark.png"
-                        alt="Experience icon"
-                        class="icon"
-                    />
-                    <div>
-                        <h3>React JS</h3>
-                        <p>Intermediate</p>
-                    </div>
-                    </article>
-                </div>
-            </div>
+            
 
         </div>
         </div>
@@ -605,18 +631,8 @@ During my tenure at <strong>Tata Consultancy Services (TCS)</strong>, I played a
             </ul>
         </div>
         </nav>
-        <p>Copyright &#169; 2024 Sujit Bhalekar. All Rights Reserved.</p>
+        <p>Copyright &#169; 2025 Sujit Bhalekar. All Rights Reserved.</p>
     </footer>
     <script src="script.js"></script>
     </body>
     </html>
-
-
-<!-- One Important change in achievements section
-    Problem: Projects and achievements sections overlaps with each other so to resolve I temporarily tried in style.css added the #achievement margin-bottom property. Remember its a very naive solution
-    
-    #achievement {
-        position: relative; /* This ensures the section is positioned relative to its normal position */
-        margin-bottom: 50rem; /* Add some margin to ensure spacing between sections */
-}
--->
