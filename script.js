@@ -30,6 +30,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
+  // Close mobile menu gracefully when user scrolls down
+  window.addEventListener('scroll', function () {
+    if (hamburgerMenu.classList.contains('active')) {
+      hamburgerMenu.classList.remove('active');
+      navLinksContainer.classList.remove('active');
+    }
+  }, { passive: true });
+
   /* ──────────────────────────────────────────────
      2. SMOOTH SCROLL for nav links
   ────────────────────────────────────────────── */
@@ -189,8 +197,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     setTimeout(typeChar, startDelay);
   }
-  /* ── Dynamic Typewriter for Section Titles ────── */
-  const sectionTitles = document.querySelectorAll('h1.title');
+  /* ── Dynamic Typewriter for Section Titles & Logo ────── */
+  const sectionTitles = document.querySelectorAll('h1.title, .logo');
   const titleObserver = new IntersectionObserver((entries, observer) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {

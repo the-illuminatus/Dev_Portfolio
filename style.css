@@ -2,7 +2,8 @@
    SUJIT BHALEKAR — PREMIUM PORTFOLIO STYLESHEET
    Font: Inter + JetBrains Mono  |  Palette: Navy + Violet
    ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.cdnfonts.com/css/sf-pro-display');
 
 /* ─── RESET & BASE ────────────────────────────────────────── */
 *, *::before, *::after {
@@ -52,7 +53,7 @@ html {
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, "SF Pro Text", "San Francisco", "Helvetica Neue", Helvetica, Arial, sans-serif;
   line-height: 1.7;
   color: var(--clr-text);
   background: var(--clr-bg);
@@ -123,7 +124,6 @@ nav.scrolled::after {
 }
 
 .logo {
-  font-family: 'JetBrains Mono', monospace;
   font-size: 1.5rem;
   font-weight: 700;
   background: linear-gradient(135deg, #c4b5fd 0%, #8b5cf6 40%, #6366f1 100%);
