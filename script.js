@@ -6,16 +6,20 @@ document.addEventListener('DOMContentLoaded', function () {
   const hamburgerMenu      = document.querySelector('.hamburger-menu');
   const navLinksContainer  = document.querySelector('#desktop-nav .nav-links-container');
 
+  function setMenuOpen(isOpen) {
+    hamburgerMenu.classList.toggle('active', isOpen);
+    navLinksContainer.classList.toggle('active', isOpen);
+    hamburgerMenu.setAttribute('aria-expanded', String(isOpen));
+  }
+
   hamburgerMenu.addEventListener('click', function () {
-    hamburgerMenu.classList.toggle('active');
-    navLinksContainer.classList.toggle('active');
+    setMenuOpen(!hamburgerMenu.classList.contains('active'));
   });
 
   // Close mobile menu when clicking a nav link
   document.querySelectorAll('.nav-links a').forEach(link => {
     link.addEventListener('click', function () {
-      hamburgerMenu.classList.remove('active');
-      navLinksContainer.classList.remove('active');
+      setMenuOpen(false);
     });
   });
 
@@ -25,16 +29,14 @@ document.addEventListener('DOMContentLoaded', function () {
       !hamburgerMenu.contains(e.target) &&
       !navLinksContainer.contains(e.target)
     ) {
-      hamburgerMenu.classList.remove('active');
-      navLinksContainer.classList.remove('active');
+      setMenuOpen(false);
     }
   });
 
   // Close mobile menu gracefully when user scrolls down
   window.addEventListener('scroll', function () {
     if (hamburgerMenu.classList.contains('active')) {
-      hamburgerMenu.classList.remove('active');
-      navLinksContainer.classList.remove('active');
+      setMenuOpen(false);
     }
   }, { passive: true });
 
@@ -175,9 +177,41 @@ document.addEventListener('DOMContentLoaded', function () {
     const pauseStart = 500;       // wait 0.5s before typing again
     const startDelay = 600;       // initial wait for hero fade-in
 
+    // Lock the wrapper's width to the fully-typed name so text-align: center
+    // (active on mobile) never has to reposition mid-animation, and keep the
+    // absolutely-positioned cursor glued to the end of the currently-typed
+    // text. Both measured via an off-screen canvas — no hidden/duplicate
+    // text added to the DOM, and the cursor never contributes to the
+    // wrapper's own width/centering since it's out of normal flow.
+    const heroTypewriterEl = typewriterEl.closest('.hero-typewriter');
+    const cursorEl = heroTypewriterEl ? heroTypewriterEl.querySelector('.typewriter-cursor') : null;
+    const measureCanvas = document.createElement('canvas');
+    const measureCtx = measureCanvas.getContext('2d');
+
+    function measureTextWidth(text) {
+      const computed = window.getComputedStyle(typewriterEl);
+      measureCtx.font = `${computed.fontWeight} ${computed.fontSize} ${computed.fontFamily}`;
+      return measureCtx.measureText(text).width;
+    }
+
+    function positionCursor(text) {
+      if (!cursorEl) return;
+      cursorEl.style.left = Math.ceil(measureTextWidth(text)) + 'px';
+    }
+
+    function lockHeroNameWidth() {
+      if (!heroTypewriterEl) return;
+      heroTypewriterEl.style.minWidth = Math.ceil(measureTextWidth(fullName)) + 'px';
+      positionCursor(fullName.substring(0, charIndex));
+    }
+
+    lockHeroNameWidth();
+    window.addEventListener('resize', lockHeroNameWidth, { passive: true });
+
     function typeChar() {
       const currentText = fullName.substring(0, charIndex);
       typewriterEl.textContent = currentText;
+      positionCursor(currentText);
 
       let delay = isDeleting ? deletingSpeed : typingSpeed;
 
@@ -198,7 +232,7 @@ document.addEventListener('DOMContentLoaded', function () {
     setTimeout(typeChar, startDelay);
   }
   /* ── Dynamic Typewriter for Section Titles & Logo ────── */
-  const sectionTitles = document.querySelectorAll('h1.title, .logo');
+  const sectionTitles = document.querySelectorAll('.title, .logo');
   const titleObserver = new IntersectionObserver((entries, observer) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -245,18 +279,89 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!text) return;
     
     title.dataset.originalText = text;
-    title.textContent = ''; 
-    
+    title.textContent = '';
+
+    // Real text stays in the DOM for screen readers; the animated chars are decorative
+    const srSpan = document.createElement('span');
+    srSpan.className = 'sr-only';
+    srSpan.textContent = text;
+
     // Reconstruct with span and exact styling
     const textSpan = document.createElement('span');
     textSpan.className = 'dynamic-text';
+    textSpan.setAttribute('aria-hidden', 'true');
     const cursorSpan = document.createElement('span');
     cursorSpan.className = 'typewriter-cursor';
-    
+    cursorSpan.setAttribute('aria-hidden', 'true');
+
+    title.appendChild(srSpan);
     title.appendChild(textSpan);
     title.appendChild(cursorSpan);
-    
+
     titleObserver.observe(title);
+  });
+
+  /* ──────────────────────────────────────────────
+     7. PANEL ACCORDION (Explore Project + nested sub-sections)
+     setTriggerPanelOpen is the one shared primitive for any
+     trigger+panel pair wired via aria-controls. Project-level
+     "Explore Project" layers card-level state (grid span,
+     one-open-per-section) on top of it; nested sub-toggles like
+     "System Architecture" call it directly with no extra logic —
+     same mechanism, same transitions, same chevron, no duplicate
+     accordion implementation.
+  ────────────────────────────────────────────── */
+  function setTriggerPanelOpen(trigger, isOpen) {
+    const panel = document.getElementById(trigger.getAttribute('aria-controls'));
+    trigger.setAttribute('aria-expanded', String(isOpen));
+    panel.classList.toggle('is-open', isOpen);
+    panel.setAttribute('aria-hidden', String(!isOpen));
+  }
+
+  function openProjectCard(card) {
+    card.classList.add('is-open');
+    setTriggerPanelOpen(card.querySelector('.project-card__expand-btn'), true);
+  }
+
+  function closeProjectCard(card) {
+    card.classList.remove('is-open');
+    setTriggerPanelOpen(card.querySelector('.project-card__expand-btn'), false);
+  }
+
+  document.querySelectorAll('.project-card__expand-btn').forEach(trigger => {
+    trigger.addEventListener('click', function () {
+      const card = trigger.closest('.project-card');
+      const group = card.closest('.about-containers');
+      const wasOpen = card.classList.contains('is-open');
+
+      // Accordion: only one case study open per section at a time
+      if (group) {
+        group.querySelectorAll('.project-card.is-open').forEach(openCard => {
+          if (openCard !== card) closeProjectCard(openCard);
+        });
+      }
+
+      wasOpen ? closeProjectCard(card) : openProjectCard(card);
+    });
+  });
+
+  document.querySelectorAll('.project-card__collapse-btn').forEach(closeBtn => {
+    closeBtn.addEventListener('click', function () {
+      const card = closeBtn.closest('.project-card');
+      closeProjectCard(card);
+      // Bring the collapsed card back into view for anyone scrolled deep into the case study
+      const offset = nav.offsetHeight;
+      const top = card.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: 'smooth' });
+    });
+  });
+
+  // Nested sub-section toggles (e.g. "System Architecture") — standalone,
+  // not part of the card-level accordion group, but same open/close primitive
+  document.querySelectorAll('.project-card__subtoggle').forEach(trigger => {
+    trigger.addEventListener('click', function () {
+      setTriggerPanelOpen(trigger, trigger.getAttribute('aria-expanded') !== 'true');
+    });
   });
 
 });
