@@ -1,5 +1,35 @@
 document.addEventListener('DOMContentLoaded', function () {
 
+  /* ══════════════════════════════════════════════
+     TEMPORARY DIAGNOSTIC LOGGING — Hero animation runtime trace
+     Remove once the mobile-vs-desktop divergence is identified.
+  ══════════════════════════════════════════════ */
+  const __heroT0 = performance.now();
+  function heroLog(label, data) {
+    const t = (performance.now() - __heroT0).toFixed(0);
+    console.log('[HeroAnim +' + t + 'ms] ' + label, data !== undefined ? data : '');
+  }
+  heroLog('DOMContentLoaded fired', {
+    readyState: document.readyState,
+    viewportWidth: window.innerWidth,
+    devicePixelRatio: window.devicePixelRatio
+  });
+
+  window.addEventListener('load', function () {
+    heroLog('window.load fired', {
+      fontsStatus: document.fonts ? document.fonts.status : 'Font Loading API unsupported',
+      viewportWidth: window.innerWidth
+    });
+  });
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () {
+      heroLog('document.fonts.ready resolved', { fontsStatus: document.fonts.status });
+    });
+  } else {
+    heroLog('Font Loading API (document.fonts) unsupported on this browser');
+  }
+
   /* ──────────────────────────────────────────────
      1. HAMBURGER MENU
   ────────────────────────────────────────────── */
@@ -188,37 +218,70 @@ document.addEventListener('DOMContentLoaded', function () {
     const measureCanvas = document.createElement('canvas');
     const measureCtx = measureCanvas.getContext('2d');
 
+    heroLog('Hero typewriter setup start', {
+      heroTypewriterElFound: !!heroTypewriterEl,
+      cursorElFound: !!cursorEl,
+      rect: typewriterEl.closest('.title') ? typewriterEl.closest('.title').getBoundingClientRect() : null
+    });
+
     function measureTextWidth(text) {
       const computed = window.getComputedStyle(typewriterEl);
       measureCtx.font = `${computed.fontWeight} ${computed.fontSize} ${computed.fontFamily}`;
-      return measureCtx.measureText(text).width;
+      const width = measureCtx.measureText(text).width;
+      heroLog('measureTextWidth()', { text: text, font: measureCtx.font, width: width });
+      return width;
     }
 
     function positionCursor(text) {
       if (!cursorEl) return;
-      cursorEl.style.left = Math.ceil(measureTextWidth(text)) + 'px';
+      const left = Math.ceil(measureTextWidth(text));
+      cursorEl.style.left = left + 'px';
+      heroLog('positionCursor()', { text: text, left: left });
     }
 
-    function lockHeroNameWidth() {
+    function lockHeroNameWidth(source) {
       if (!heroTypewriterEl) return;
-      heroTypewriterEl.style.minWidth = Math.ceil(measureTextWidth(fullName)) + 'px';
+      const minWidth = Math.ceil(measureTextWidth(fullName));
+      heroTypewriterEl.style.minWidth = minWidth + 'px';
+      heroLog('lockHeroNameWidth() called', {
+        source: source || 'initial',
+        minWidth: minWidth,
+        viewportWidth: window.innerWidth,
+        charIndexAtCallTime: charIndex
+      });
       positionCursor(fullName.substring(0, charIndex));
     }
 
-    lockHeroNameWidth();
-    window.addEventListener('resize', lockHeroNameWidth, { passive: true });
+    lockHeroNameWidth('initial-setup');
+    window.addEventListener('resize', function () {
+      heroLog('window resize event fired', {
+        newViewportWidth: window.innerWidth,
+        newViewportHeight: window.innerHeight,
+        scrollY: window.scrollY
+      });
+      lockHeroNameWidth('resize-event');
+    }, { passive: true });
+
+    heroLog('Typewriter scheduled to start', { startDelay: startDelay });
 
     function typeChar() {
+      const scheduledAt = performance.now();
       const currentText = fullName.substring(0, charIndex);
       typewriterEl.textContent = currentText;
       positionCursor(currentText);
 
+      if (!isDeleting && charIndex === 1) {
+        heroLog('FIRST character typed', { currentText: currentText });
+      }
+
       let delay = isDeleting ? deletingSpeed : typingSpeed;
 
       if (!isDeleting && charIndex === fullName.length) {
+        heroLog('LAST character typed -> pause start (full name held)', { pauseMs: pauseEnd });
         delay = pauseEnd;
         isDeleting = true;
       } else if (isDeleting && charIndex === 0) {
+        heroLog('Delete complete -> pause start (empty) -> loop will restart', { pauseMs: pauseStart });
         isDeleting = false;
         delay = pauseStart;
       }
@@ -226,7 +289,13 @@ document.addEventListener('DOMContentLoaded', function () {
       if (isDeleting) charIndex--;
       else charIndex++;
 
-      setTimeout(typeChar, delay);
+      setTimeout(function () {
+        const actualElapsed = performance.now() - scheduledAt;
+        if (Math.abs(actualElapsed - delay) > 50) {
+          heroLog('TIMER DRIFT DETECTED', { scheduledDelay: delay, actualElapsed: actualElapsed.toFixed(1) });
+        }
+        typeChar();
+      }, delay);
     }
 
     setTimeout(typeChar, startDelay);
