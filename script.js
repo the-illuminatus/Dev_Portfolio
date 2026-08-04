@@ -210,13 +210,18 @@ document.addEventListener('DOMContentLoaded', function () {
     // Lock the wrapper's width to the fully-typed name so text-align: center
     // (active on mobile) never has to reposition mid-animation, and keep the
     // absolutely-positioned cursor glued to the end of the currently-typed
-    // text. Both measured via an off-screen canvas — no hidden/duplicate
-    // text added to the DOM, and the cursor never contributes to the
-    // wrapper's own width/centering since it's out of normal flow.
+    // text. Width is measured via the real DOM layout (briefly setting the
+    // full name and reading getBoundingClientRect, then restoring — a single
+    // synchronous swap, so nothing is ever painted mid-measurement) rather
+    // than an off-screen canvas: canvas text metrics and true browser text
+    // layout don't always agree pixel-for-pixel, and any such discrepancy
+    // becomes visible the moment text-align: center centers the wrapper box
+    // around a width that doesn't exactly match the real rendered text. No
+    // hidden/duplicate text is added to the DOM, and the cursor never
+    // contributes to the wrapper's own width/centering since it's out of
+    // normal flow.
     const heroTypewriterEl = typewriterEl.closest('.hero-typewriter');
     const cursorEl = heroTypewriterEl ? heroTypewriterEl.querySelector('.typewriter-cursor') : null;
-    const measureCanvas = document.createElement('canvas');
-    const measureCtx = measureCanvas.getContext('2d');
 
     heroLog('Hero typewriter setup start', {
       heroTypewriterElFound: !!heroTypewriterEl,
@@ -224,24 +229,25 @@ document.addEventListener('DOMContentLoaded', function () {
       rect: typewriterEl.closest('.title') ? typewriterEl.closest('.title').getBoundingClientRect() : null
     });
 
-    function measureTextWidth(text) {
-      const computed = window.getComputedStyle(typewriterEl);
-      measureCtx.font = `${computed.fontWeight} ${computed.fontSize} ${computed.fontFamily}`;
-      const width = measureCtx.measureText(text).width;
-      heroLog('measureTextWidth()', { text: text, font: measureCtx.font, width: width });
+    function measureFullNameWidth() {
+      const original = typewriterEl.textContent;
+      typewriterEl.textContent = fullName;
+      const width = typewriterEl.getBoundingClientRect().width;
+      typewriterEl.textContent = original;
+      heroLog('measureFullNameWidth() (DOM layout, not canvas)', { width: width });
       return width;
     }
 
-    function positionCursor(text) {
+    function positionCursor() {
       if (!cursorEl) return;
-      const left = Math.ceil(measureTextWidth(text));
+      const left = Math.ceil(typewriterEl.getBoundingClientRect().width);
       cursorEl.style.left = left + 'px';
-      heroLog('positionCursor()', { text: text, left: left });
+      heroLog('positionCursor()', { currentText: typewriterEl.textContent, left: left });
     }
 
     function lockHeroNameWidth(source) {
       if (!heroTypewriterEl) return;
-      const minWidth = Math.ceil(measureTextWidth(fullName));
+      const minWidth = Math.ceil(measureFullNameWidth());
       heroTypewriterEl.style.minWidth = minWidth + 'px';
       heroLog('lockHeroNameWidth() called', {
         source: source || 'initial',
@@ -249,7 +255,7 @@ document.addEventListener('DOMContentLoaded', function () {
         viewportWidth: window.innerWidth,
         charIndexAtCallTime: charIndex
       });
-      positionCursor(fullName.substring(0, charIndex));
+      positionCursor();
     }
 
     lockHeroNameWidth('initial-setup');
@@ -268,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const scheduledAt = performance.now();
       const currentText = fullName.substring(0, charIndex);
       typewriterEl.textContent = currentText;
-      positionCursor(currentText);
+      positionCursor();
 
       if (!isDeleting && charIndex === 1) {
         heroLog('FIRST character typed', { currentText: currentText });
