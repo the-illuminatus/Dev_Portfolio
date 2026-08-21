@@ -439,4 +439,24 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
+  // Certifications (#achievement): only relevant at the mobile breakpoint,
+  // where CSS switches the cards into a compact accordion — desktop keeps
+  // every card fully expanded regardless of this state. Same shared
+  // setTriggerPanelOpen primitive as above, plus one-open-per-section
+  // accordion behavior mirroring the Projects card-level accordion.
+  document.querySelectorAll('.achievement-card__toggle').forEach(trigger => {
+    trigger.addEventListener('click', function () {
+      const group = trigger.closest('.about-containers');
+      const wasOpen = trigger.getAttribute('aria-expanded') === 'true';
+
+      if (group) {
+        group.querySelectorAll('.achievement-card__toggle[aria-expanded="true"]').forEach(openTrigger => {
+          if (openTrigger !== trigger) setTriggerPanelOpen(openTrigger, false);
+        });
+      }
+
+      setTriggerPanelOpen(trigger, !wasOpen);
+    });
+  });
+
 });

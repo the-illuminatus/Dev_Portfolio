@@ -844,9 +844,13 @@ section {
   margin: 0 auto;
 }
 
-/* 4 columns on desktop */
+/* Skills: fixed 3 columns on desktop. The 9 category cards tile evenly
+   into 3 clean rows this way; auto-fit's minmax(18rem,1fr) let the fitted
+   column count drift to 4 at common desktop widths (1366px+), which left
+   a lone 9th card stranded in an otherwise-empty row. Tablet/mobile keep
+   their own explicit 2-col/1-col overrides in mediaqueries.css. */
 .experience-details-container .about-containers {
-  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
 }
 
@@ -972,6 +976,24 @@ section {
   margin-bottom: 1.25rem;
 }
 
+/* ─── ACHIEVEMENT CARD ACCORDION (mobile only) ─────────────────
+   Desktop baseline: the toggle stays hidden and both panel layers
+   use `display: contents`, which removes them from the box tree so
+   their children (badge, title, meta, description, CTA) lay out as
+   if they were still direct children of the card — pixel-identical
+   to the plain, always-expanded card. Below the mobile breakpoint,
+   mediaqueries.css turns the toggle on and switches the panel to
+   the same grid-rows collapse/expand mechanic already used by the
+   Projects accordion (reusing setTriggerPanelOpen in script.js). */
+.achievement-card__toggle {
+  display: none;
+}
+
+.achievement-card__panel,
+.achievement-card__panel-inner {
+  display: contents;
+}
+
 /* ─── COLOR CONTAINERS (Achievement & Project Cards) ─────── */
 .color-container {
   background: rgba(26, 34, 53, 0.75);
@@ -1043,9 +1065,12 @@ section {
 }
 
 /* ─── PROJECTS SECTION ────────────────────────────────────── */
+/* minmax lowered from 20rem to 16rem so all 4 cards fit one clean row
+   at every desktop width above the 1200px tablet breakpoint — at 20rem
+   only 3 fit, stranding the 4th card alone in a mostly-empty row. */
 #projects .about-containers {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
   gap: 1.75rem;
 }
 
@@ -1418,6 +1443,13 @@ section {
   transform: translateX(-50%) rotate(45deg);
 }
 
+/* Shorter variant for bridging a connector to an explanatory
+   annotation rather than another architecture node — keeps the
+   same line/arrow styling, just less empty space to cross. */
+.arch-connector--short {
+  height: 0.6rem;
+}
+
 /* Fan-out / fan-in row for parallel components (e.g. Physics / Entity System / Animation) */
 .arch-branch {
   position: relative;
@@ -1446,12 +1478,12 @@ section {
   bottom: 0;
 }
 
-.arch-branch .arch-node {
+.arch-branch > .arch-node {
   position: relative;
 }
 
-.arch-branch .arch-node::before,
-.arch-branch .arch-node::after {
+.arch-branch > .arch-node::before,
+.arch-branch > .arch-node::after {
   content: '';
   position: absolute;
   left: 50%;
@@ -1461,12 +1493,95 @@ section {
   transform: translateX(-50%);
 }
 
-.arch-branch .arch-node::before {
+.arch-branch > .arch-node::before {
   top: -1.5rem;
 }
 
-.arch-branch .arch-node::after {
+.arch-branch > .arch-node::after {
   bottom: -1.5rem;
+}
+
+/* Diverging branch: members lead to different continuations below
+   rather than reconverging, so the bottom fan-in bar/stub is dropped
+   (used where a branch's paths stay independent, e.g. Mario's
+   GameEngineAdapter path vs. its Spring Boot Backend path). */
+.arch-branch--diverge::after {
+  content: none;
+}
+
+.arch-branch--diverge > .arch-node::after {
+  content: none;
+}
+
+/* Column wrapper for a branch member that continues its own chain
+   below (connector + node, or a further nested boundary/branch)
+   instead of standing alone. Gets the same top stub as a plain
+   branch node so it still visually reads as a fan-out member. */
+.arch-branch__column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.arch-branch__column > .arch-node:first-child {
+  position: relative;
+}
+
+.arch-branch__column > .arch-node:first-child::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -1.5rem;
+  width: 2px;
+  height: 1.5rem;
+  background: rgba(139, 92, 246, 0.4);
+  transform: translateX(-50%);
+}
+
+/* Isolation boundary around an embedded engine (e.g. the sandboxed
+   Mario game engine running in its own iframe) — a dashed outline
+   groups the engine's node with its internal-responsibility chips
+   as a single unit, without turning them into a flowchart. */
+.arch-engine {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+  padding: 0.85rem 0.9rem 1rem;
+  border: 1px dashed rgba(139, 92, 246, 0.35);
+  border-radius: var(--radius-sm);
+  background: rgba(139, 92, 246, 0.04);
+}
+
+.arch-engine__internals {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+  max-width: 14rem;
+}
+
+/* Small note extending the lifecycle/event flow out of the diagram
+   (e.g. the Mario engine reporting GAME_OVER through the adapter)
+   without drawing a separate reverse-direction diagram. Sits right
+   under the connector line dropped from the branch above, so it
+   reads as part of that flow rather than an unrelated floating note. */
+.arch-lifecycle {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: 0.75rem 1rem;
+  border: 1px dashed var(--clr-border);
+  border-radius: var(--radius-sm);
+  background: rgba(139, 92, 246, 0.04);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--clr-muted);
+  text-align: left;
 }
 
 /* Structured technology groups (replaces plain-text stack lines) */
