@@ -187,6 +187,33 @@ nav.scrolled::after {
   box-shadow: 0 0 12px rgba(139, 92, 246, 0.25), inset 0 0 0 1px rgba(139,92,246,0.2);
 }
 
+/* Thin active/hover indicator, growing from center outward via width + translateX(-50%).
+   Scoped to #desktop-nav specifically — .nav-links is reused by the footer nav,
+   which must not receive this. */
+#desktop-nav .nav-links a::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0.3rem;
+  width: 0;
+  height: 2px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, var(--clr-violet), var(--clr-accent));
+  transform: translateX(-50%);
+  transition: width 0.22s ease;
+  pointer-events: none;
+}
+
+#desktop-nav .nav-links a.active::after {
+  width: calc(100% - 1.4rem);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  #desktop-nav .nav-links a:not(.active):hover::after {
+    width: calc(100% - 1.4rem);
+  }
+}
+
 /* ─── HAMBURGER ───────────────────────────────────────────── */
 .hamburger-menu {
   display: none;
@@ -1144,6 +1171,85 @@ section {
   border: none;
   border-radius: 0;
   box-shadow: none;
+}
+
+/* ─── Traveling perimeter highlight (approved reference implementation) ───
+   .border-travel is sized to exactly its parent card's box (inset: 0), so
+   animating its own `transform: translate(X%, Y%)` moves it by X/Y percent
+   of that card's actual width/height — 100% = one full side. The visible
+   line is a child pinned at the wrapper's top-left (0,0) reference corner,
+   so it rides along wherever the wrapper's translate takes it. Pure
+   transform, no top/left animation, no gradient/mask animation.
+   Markup (`<span class="border-travel" aria-hidden="true"></span>` as the
+   first child) is only present on the approved major outer containers, so
+   this selector never needs to be broadened to reach them. Each such parent
+   already carries `position: relative; overflow: hidden;` via its own
+   card class (.details-container / .color-container / .experience-card /
+   .text-container). */
+.border-travel {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  animation: borderTravel 6s linear infinite;
+}
+
+.border-travel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 110px;
+  height: 3px;
+  margin: -1.5px 0 0 -55px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, var(--clr-violet) 20%, var(--clr-accent) 50%, var(--clr-indigo) 80%, transparent);
+  box-shadow: 0 0 3px 1px rgba(139, 92, 246, 0.45);
+  animation: borderTravelRotate 6s linear infinite;
+}
+
+/* Experience card is ~2.7x the linear scale of a standard card (896px capped
+   width vs ~313px project-card width; a much taller stacked-content height
+   to match), so its perimeter is proportionally longer. Duration is scaled
+   by that same ratio (6s * ~2.7 ≈ 16s) to keep the line's speed along the
+   border visually consistent with the standard 6s cards, rather than
+   appearing faster on the larger card. Position/rotation must share this
+   duration to stay in sync. */
+.experience-card > .border-travel {
+  animation-duration: 16s;
+}
+
+.experience-card > .border-travel::before {
+  animation-duration: 16s;
+}
+
+@keyframes borderTravel {
+  0%   { transform: translate(0%, 0%); }     /* start: top-left corner */
+  25%  { transform: translate(100%, 0%); }   /* TOP: left → right */
+  50%  { transform: translate(100%, 100%); } /* RIGHT: top → bottom */
+  75%  { transform: translate(0%, 100%); }   /* BOTTOM: right → left */
+  100% { transform: translate(0%, 0%); }     /* LEFT: bottom → top */
+}
+
+/* Keeps the segment aligned with whichever side it's currently on: horizontal
+   on top/bottom, vertical on left/right. Snaps at each corner (matching the
+   position keyframes above) rather than swinging through the turn. */
+@keyframes borderTravelRotate {
+  0%     { transform: rotate(0deg); }   /* TOP: horizontal */
+  24.99% { transform: rotate(0deg); }
+  25%    { transform: rotate(90deg); }  /* RIGHT: vertical */
+  49.99% { transform: rotate(90deg); }
+  50%    { transform: rotate(0deg); }   /* BOTTOM: horizontal */
+  74.99% { transform: rotate(0deg); }
+  75%    { transform: rotate(90deg); }  /* LEFT: vertical */
+  99.99% { transform: rotate(90deg); }
+  100%   { transform: rotate(0deg); }   /* back to TOP: horizontal */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .border-travel {
+    animation: none;
+  }
 }
 
 .project-card__heading {
